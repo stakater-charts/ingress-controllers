@@ -1,0 +1,10 @@
+namespace: internal-ingress
+internalIngress:
+  image:
+    name: gcr.io/google_containers/nginx-ingress-controller
+    tag: 0.9.0-beta.11
+    pullPolicy: Always
+  service:
+    sslCert: arn:aws:acm:us-west-2:449074299682:certificate/743f8bbb-2314-4215-82f4-3e797c954b09
+  loadBalancerSourceRanges:
+    - 125.209.127.26/32
