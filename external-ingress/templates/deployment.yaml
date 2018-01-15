@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "name" . }}
+spec:
+  replicas: 2
+  revisionHistoryLimit: 3
+  template:
+    metadata:
+      labels:
+        k8s-app: {{ template "name" . }}-lb
+        app: {{ template "fullname" . }}
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        release: {{ .Release.Name | quote }}
+        heritage: {{ .Release.Service | quote }}
+    spec:
+      terminationGracePeriodSeconds: 60
+      serviceAccount: {{ template "name" . }}-serviceaccount
+      containers:
+        - name: {{ template "name" . }}-controller
+          image: "{{ .Values.externalIngress.image.name }}:{{ .Values.externalIngress.image.tag }}"
+          imagePullPolicy: {{ .Values.externalIngress.image.pullPolicy }}
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 18080
+              scheme: HTTP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 18080
+              scheme: HTTP
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+          args:
+            - /nginx-ingress-controller
+            - --default-backend-service=$(POD_NAMESPACE)/default-backend
+            - --configmap=$(POD_NAMESPACE)/{{ template "name" . }}
+            - --publish-service=$(POD_NAMESPACE)/{{ template "name" . }}
+            - --ingress-class={{ template "name" . }}
+          # Use downward API
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          ports:
+            - containerPort: 80
+            - containerPort: 443
