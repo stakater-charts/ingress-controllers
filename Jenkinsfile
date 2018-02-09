@@ -8,47 +8,27 @@ String externalIngressChartName = "external-ingress"
 
 clientsNode(clientsImage: 'stakater/kops-ansible:helm-bundle') {
     container(name: 'clients') {
+        def helm = new io.stakater.charts.Helm()
+        def chartManager = new io.stakater.charts.ChartManager()
         stage('Checkout') {
             checkout scm
         }
         
         stage('Init Helm') {
-            sh "helm init --client-only"
+            helm.init(true)
         }
 
         stage('Prepare Chart') {
-            internalIngressChartPackageName = prepareChart(internalIngressChartName)
-            externalIngressChartPackageName = prepareChart(externalIngressChartName)
+            helm.lint(WORKSPACE, internalIngressChartName)
+            internalIngressChartPackageName = helm.package(WORKSPACE, internalIngressChartName)
+
+            helm.lint(WORKSPACE, externalIngressChartName)
+            externalIngressChartPackageName = helm.package(WORKSPACE, externalIngressChartName)
         }
 
         stage('Upload Chart') {
-            uploadChart(internalIngressChartName, internalIngressChartPackageName)
-            uploadChart(externalIngressChartName, externalIngressChartPackageName)
+            chartManager.uploadToChartMuseum(WORKSPACE, internalIngressChartName, internalIngressChartPackageName)
+            chartManager.uploadToChartMuseum(WORKSPACE, externalIngressChartName, externalIngressChartPackageName)
         }
     }
-}
-
-def prepareChart(String chartName) {
-    result = shOutput """
-                cd ${WORKSPACE}/${chartName}
-                helm lint
-                helm package .
-            """
-
-    return result.substring(result.lastIndexOf('/') + 1, result.length())
-}
-
-def uploadChart(String chartName, String fileName) {
-    sh """
-        cd ${WORKSPACE}/${chartName}
-        curl -L --data-binary \"@${fileName}\" http://chartmuseum/api/charts
-    """
-}
-
-def shOutput(String command) {
-    return sh(
-        script: """
-            ${command}
-        """,
-        returnStdout: true).trim()
 }
