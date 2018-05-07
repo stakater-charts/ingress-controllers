@@ -1,6 +1,9 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  labels:
+{{ include "labels.stakater" . | indent 4 }}
+{{ include "labels.chart" . | indent 4 }}
   name: {{ template "name" . }}-serviceaccount
   namespace: {{ .Values.internalIngress.namespace }}
 ---
@@ -59,6 +62,9 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: Role
 metadata:
+  labels:
+{{ include "labels.stakater" . | indent 4 }}
+{{ include "labels.chart" . | indent 4 }}
   name: {{ template "name" . }}-role
   namespace: {{ .Values.internalIngress.namespace }}
 rules:
@@ -102,6 +108,9 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: RoleBinding
 metadata:
+  labels:
+{{ include "labels.stakater" . | indent 4 }}
+{{ include "labels.chart" . | indent 4 }}
   name: {{ template "name" . }}-role-nisa-binding
   namespace: {{ .Values.internalIngress.namespace }}
 roleRef:
@@ -116,6 +125,9 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
 metadata:
+  labels:
+{{ include "labels.stakater" . | indent 4 }}
+{{ include "labels.chart" . | indent 4 }}
   name: {{ template "name" . }}-clusterrole-nisa-binding
 roleRef:
   apiGroup: rbac.authorization.k8s.io

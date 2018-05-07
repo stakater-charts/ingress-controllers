@@ -1,6 +1,9 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
+  labels:
+{{ include "labels.stakater" . | indent 4 }}
+{{ include "labels.chart" . | indent 4 }}
   name: {{ template "name" . }}
 spec:
   replicas: 2
@@ -8,11 +11,8 @@ spec:
   template:
     metadata:
       labels:
-        k8s-app: {{ template "name" . }}-lb
-        app: {{ template "fullname" . }}
-        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-        release: {{ .Release.Name | quote }}
-        heritage: {{ .Release.Service | quote }}
+  labels:
+{{ include "labels.selector" . | indent 8 }}
     spec:
       terminationGracePeriodSeconds: 60
       serviceAccount: {{ template "name" . }}-serviceaccount
