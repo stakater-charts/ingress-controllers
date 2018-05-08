@@ -6,10 +6,12 @@ metadata:
 {{ include "labels.chart" . | indent 4 }}
   name: {{ template "name" . }}
 spec:
-  replicas: 2
-  revisionHistoryLimit: 3
+  replicas: {{ .Values.internalIngress.deployment.replicas }}
+  revisionHistoryLimit: {{ .Values.internalIngress.deployment.revisionHistoryLimit }}
   template:
     metadata:
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: "{{ .Values.internalIngress.deployment.criticalPod }}"
       labels:
 {{ include "labels.selector" . | indent 8 }}
     spec:
@@ -22,12 +24,12 @@ spec:
           readinessProbe:
             httpGet:
               path: /healthz
-              port: 18080
+              port: 10254
               scheme: HTTP
           livenessProbe:
             httpGet:
               path: /healthz
-              port: 18080
+              port: 10254
               scheme: HTTP
             initialDelaySeconds: 10
             timeoutSeconds: 5
@@ -37,6 +39,7 @@ spec:
             - --configmap=$(POD_NAMESPACE)/{{ template "name" . }}
             - --publish-service=$(POD_NAMESPACE)/{{ template "name" . }}
             - --ingress-class={{ template "name" . }}
+            - --annotations-prefix={{ .Values.internalIngress.deployment.annotationsPrefix }}
           # Use downward API
           env:
             - name: POD_NAME
