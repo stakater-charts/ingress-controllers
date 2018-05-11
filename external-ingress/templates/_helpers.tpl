@@ -23,7 +23,7 @@ provider: {{ .Values.externalIngress.labels.provider }}
 
 {{- define "labels.stakater" -}}
 {{ template "labels.selector" . }}
-version: {{ .Values.externalIngress.labels.version | quote }}
+version: "{{ .Values.externalIngress.labels.version }}"
 {{- end -}}
 
 {{- define "labels.chart" -}}
