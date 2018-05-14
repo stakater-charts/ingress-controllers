@@ -13,11 +13,7 @@ spec:
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: "{{ .Values.externalIngress.deployment.criticalPod }}"
       labels:
-        k8s-app: {{ template "name" . }}-lb
-        app: {{ template "fullname" . }}
-        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-        release: {{ .Release.Name | quote }}
-        heritage: {{ .Release.Service | quote }}
+{{ include "labels.selector" . | indent 8 }}
     spec:
       terminationGracePeriodSeconds: 60
       serviceAccount: {{ template "name" . }}-serviceaccount
