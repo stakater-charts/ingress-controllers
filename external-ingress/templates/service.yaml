@@ -8,9 +8,11 @@ metadata:
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: '*'
     # https://github.com/kubernetes/kubernetes/blob/master/pkg/cloudprovider/providers/aws/aws.go
+    {{- if .Values.externalIngress.service }}
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
     service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.externalIngress.service.sslCert }}
+    {{- end }}
 spec:
   type: LoadBalancer
   ports:
