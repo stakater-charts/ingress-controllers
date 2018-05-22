@@ -14,4 +14,4 @@ externalIngress:
     criticalPod: "true"
     annotationsPrefix: ingress.kubernetes.io
   service:
-    sslCert: arn:aws:acm:us-west-2:449074299682:certificate/b4d21f5a-0ef8-417e-b39d-30e9f6c50820
+    #  sslCert: arn:aws:acm:us-west-2:449074299682:certificate/123456-0ef8-417e-b39d-30e9f6c50820
