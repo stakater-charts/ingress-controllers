@@ -5,7 +5,7 @@ version: 1.0.6
 keywords:
   - internal-ingress
   - kubernetes
-home: https://github.com/stakater/chart-ingress-controllers
+home: https://github.com/stakater-charts/ingress-controllers
 maintainers:
 - name: Stakater
   email: stakater@aurorasolutions.io
