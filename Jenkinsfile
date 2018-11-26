@@ -5,4 +5,5 @@ def dummy = ""
 
 prepareAndUploadCharts {
     charts = [ "external-ingress", "internal-ingress" ]
+    isPublic = true
 }
